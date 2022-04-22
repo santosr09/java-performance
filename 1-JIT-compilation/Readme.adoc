@@ -1,0 +1,81 @@
+= Just In Time Compilation
+
+:kroki-server-url: http://localhost:8080
+:kroki-fetch-diagram:
+
+== Bytecode
+
+The Java compiler convert/compiles a Java file(.java) to bytecode file(.class)
+Main.java -> javac -> Main.class 
+
+bytecode (.class file) is interpreted by the JVM
+
+Any language that can be compiled to bytecode can be executed on a JVM. Eg: groovy, kotlin, clojure, etc.
+
+== JIT - Just In Time compiler
+The JVM can decide which method or block of code is being used most frequently, and will compile such code on to NATIVE code, using the JIT.
+With this process we will have bytecode code(executed by JVM) and compiled native machine code(executed by OS).
+
+*Code runs faster the longer it is left to run*.
+This because the VM(Virtual Machine) can profile your code and work out which bits could be optimized.
+
+The process of compiling, converting the bytecode to native machine code is run in a separate thread.
+So the thread in charge of interpreting bytecode will not be affected by the JIT compiling process.
+
+=== Assessing performance
+When you are assessing the performance of the code you need to be care if the aseesing is on native code or on bytecode code.
+
+In order to know which method or code blocks are being compiled into native code and what kind of compilation is happening when the JVM is running we could use the JVM Flag _*PrintCompilation*_
+
+== Compiler Flag: *PrintCompilation*
+
+*-XX:+PrintCompilation*
+
+Most of the JVM Flags do follow this format:
+*-XX:* Means is an advanced option.
+*+ or -* Indicates if we want to switch On or Off the option
+*OptionName* This is the name of the Option.
+
+Example:
+https://gist.github.com/rednaxelafx/1165804#file_notes.md
+
+== JVM JIT compilers - C1 and C2 
+
+https://dev.to/yousef_zook/java-performance-4-working-with-the-jit-compiler-1ak4
+
+C1: begins compiling sooner, less aggressive in optimization but faster (Native levels: 1, 2 and 3)
+C2: begins compiling later, after collecting some optimization informations while the code is running (Native level 4)
+
+The VM decide which level of compilation to apply based on how often it is being run and how complex or time-consuming it is.
+
+== Compiler Flag: *UnlockDiagnosticVMOptions* and *LogCompilation*
+
+*-XX:+UnlockDiagnosticVMOptions*
+*-XX:+LogCompilation*
+
+https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html
+----
+-XX:+LogCompilation
+Enables logging of compilation activity to a file named hotspot.log in the current working directory. You can specify a different log file path and name using the -XX:LogFile option.
+
+By default, this option is disabled and compilation activity is not logged. The -XX:+LogCompilation option has to be used together with the -XX:+UnlockDiagnosticVMOptions option that unlocks diagnostic JVM options.
+
+You can enable verbose diagnostic output with a message printed to the console every time a method is compiled by using the -XX:+PrintCompilation option.
+----
+
+=== Turning the code cache
+*-XX:+PrintCodeCache*
+_VM warning: CodeCache is full. Compiler has been disabled._
+
+*InitialCodeCacheSize* The size of the code cache size when the application starts. (around 160 Kb)
+*ReservedCodeCacheSize* The maximum size of the code cache size
+*CodeCacheExpansionSize* Dictates how quickly the code cache should grow as it.
+
+==== Modifying cache
+
+*ReservedCodeCacheSize*
+-XX:ReservedCodeCacheSize=<number><unit: byte, kilobyte, megabyte, gigabyte>
+i.e.
+-XX:ReservedCodeCacheSize=28m (28 megabytes: m or M)
+
+== Remotely monitoring the code cache with JConsole
