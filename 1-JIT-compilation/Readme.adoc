@@ -79,3 +79,20 @@ i.e.
 -XX:ReservedCodeCacheSize=28m (28 megabytes: m or M)
 
 == Remotely monitoring the code cache with JConsole
+
+== JVM Versions 32 vs 64 bit
+
+* 32 bit
+** Might be faster if heap < 3GB
+** Max heap size = 4GB
+
+* 64 bit
+** Might be faster if using long/double
+** Necessary if heap > 4GB
+** Max heap size - OS dependent
+
+*In 32 bit version, only the C1 compiler is available*
+*In 64 bit version, both C1 and C2 compilers are available*
+C1 is known as the *client's compiler* and the C2 compiler is known as the *server compiler*
+
+
